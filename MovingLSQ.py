@@ -1,6 +1,6 @@
 import numpy as np
 import functools
-from scipy.sparse import import lil_matrix
+from scipy.sparse import lil_matrix
 from scipy.optimize import least_squares
 
 
@@ -48,9 +48,14 @@ class MovingLSQ_2D:
             weight = 1 / (weight**(2*alpha))
 
         # weigth is npoints x label_num
-        x0 = srcPts.reshape([-1])
-        
-        result = least_squares(Error_2D, x0, args=(self._src, self._dst, weight))
+        jacobian = lil_matrix((npoints, npoints*2), dtype=int)
+        idx = range(npoints)
+        for i in range(2):
+            jacobian[idx, 2 * idx + i] = 1
+
+        x0 = srcPts.reshape([-1])        
+        result = least_squares(Error_2D, x0, jac_sparsity = jacobian, verbose = 2,
+                args=(self._src, self._dst, weight))
 
 
 
