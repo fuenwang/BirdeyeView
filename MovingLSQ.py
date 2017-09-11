@@ -44,18 +44,18 @@ class MovingLSQ_2D:
             label = self._src[i, :]
             D = np.linalg.norm( srcPts - label , axis = 1)
             weight[:, i] = D[:]
-            weight += 0.01 # prevent zero
-            weight = 1 / (weight**(2*alpha))
+            weight += 0.00001 # prevent zero
+        weight = 1 / (weight**(2*alpha))
 
         # weigth is npoints x label_num
         jacobian = lil_matrix((npoints, npoints*2), dtype=int)
-        idx = range(npoints)
+        idx = np.arange(npoints)
         for i in range(2):
             jacobian[idx, 2 * idx + i] = 1
 
         x0 = srcPts.reshape([-1])        
         result = least_squares(Error_2D, x0, jac_sparsity = jacobian, verbose = 2,
                 args=(self._src, self._dst, weight))
-
+        return result['x'].reshape([-1, 2])
 
 
