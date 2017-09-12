@@ -6,7 +6,9 @@ import scipy.ndimage as nd
 
 refPT = np.array([
             [0, 0],
+            [180, 0],
             [360, 0],
+            [540, 0],
             [719, 0],
             [600, 105],
             [479, 210],
@@ -17,7 +19,9 @@ refPT = np.array([
 
 fromPT = np.array([
             [0, 0],
+            [180, 0],
             [360, 0],
+            [540, 0],
             [719, 0],
             [675, 226],
             [632, 452],
@@ -80,9 +84,13 @@ if __name__ == '__main__':
     
     #srcPts = np.array([[240, 210], [120, 105]])
     solver = MLSQ.MovingLSQ_2D(refPT, fromPT)
-    dstPts = solver.Run2(srcPts, alpha = 1)
-
-    #exit()
+    #dstPts = solver.Run2(srcPts, alpha = 1)
+    tmp = np.load('Pt1.npy').item()
+    srcPts = tmp['srcPts']
+    dstPts = tmp['dstPts']
+    refPT = tmp['srcLabel']
+    fromPT = tmp['dstLabel']
+        #exit()
     #print (dstPts - srcPts)
     #print dstPts[-1, :]
     #exit()
@@ -92,6 +100,15 @@ if __name__ == '__main__':
     y_mask = mask.copy().astype(np.float)
     x_mask[mask_ref] = dstPts[:, 0]
     y_mask[mask_ref] = dstPts[:, 1]
+    np.save('Pt1.npy', {
+                        'srcPts': srcPts, 
+                        'dstPts': dstPts, 
+                        'srcLabel': refPT, 
+                        'dstLabel': fromPT,
+                        'srcMask': mask_ref,
+                        'dstMask': mask_from
+                        })
+
     #print x_mask
     img = cv2.remap(origin, x_mask.astype(np.float32), y_mask.astype(np.float32), cv2.INTER_CUBIC)
     #x_mask[]
