@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append('..')
 import cv2
 import glob
 import numpy as np
@@ -63,7 +65,7 @@ def SolveH(srcPts, dstPts):
     return H, result
 
 if __name__ == '__main__':
-    tmp = np.load('Points/Pt2.npy').item()
+    tmp = np.load('../Points/Pt2.npy').item()
     refPT = tmp['srcLabel']
     fromPT = tmp['dstLabel']
     refPT[:, 0] = 360 - (refPT[:, 0] - 360)
@@ -91,7 +93,7 @@ if __name__ == '__main__':
     '''
     solver = MLSQ.MovingLSQ_2D(refPT, fromPT)
     dstPts = solver.Run2(srcPts, alpha = 1)
-    np.save('Points/Pt6.npy', {
+    np.save('../Points/Pt6.npy', {
                         'srcPts': srcPts, 
                         'dstPts': dstPts, 
                         'srcLabel': refPT, 
@@ -105,8 +107,8 @@ if __name__ == '__main__':
     img_R = np.zeros([720, 720], np.uint8)
     img_G = np.zeros([720, 720], np.uint8)
     img_B = np.zeros([720, 720], np.uint8) 
-    img_lst = sorted(glob.glob('ImageStitching/img/birdview2/*.png'))
-    lst = sorted(glob.glob('Points/*.npy'))
+    img_lst = sorted(glob.glob('../ImageStitching/img/birdview2/*.png'))
+    lst = sorted(glob.glob('../Points/*.npy'))
     for i, one in enumerate(lst):
         idx = int(one.split('/')[-1][2]) - 1
         origin = cv2.imread(img_lst[idx])
@@ -134,5 +136,5 @@ if __name__ == '__main__':
     cv2.imshow('GG', img)
     #cv2.imshow('GG', mask2.astype(np.float32))
     cv2.waitKey(0)
-    cv2.imwrite('gg.png', img)
+    cv2.imwrite('../gg.png', img)
 
