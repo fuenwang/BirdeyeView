@@ -7,7 +7,7 @@ import numpy as np
 import functools
 import MovingLSQ as MLSQ
 import scipy.ndimage as nd
-
+'''
 refPT = np.array([
             [0, 0], [90, 0], [180, 0], [270, 0], [360, 0], [450, 0], [540, 0], [630, 0],
             [719, 0], [659, 53], [599, 105], [539, 158],
@@ -20,10 +20,25 @@ fromPT = np.array([
             [719, 719], [540, 719], [360, 719], [180, 719],
             [0, 719], [0, 630], [0, 540], [0, 360], [0, 180], [0, 90]
         ])
+'''
+refPT = np.array([
+            [719, 0], [719, 90], [719, 180], [719, 270], [719, 360], [719, 450], [719, 540], [719, 630],
+            [719, 719], [660, 667], [600, 614], [540, 562],
+            [479, 509], [479, 434], [479, 359], [479, 284],
+            [479, 209], [510, 183], [540, 157], [600, 105], [660, 53], [690, 27]
+        ])
+fromPT = np.array([
+            [0, 0], [90, 0], [180, 0], [270, 0], [360, 0], [450, 0], [540, 0], [630, 0],
+            [719, 0], [719, 180], [719, 360], [719, 540],
+            [719, 719], [540, 719], [360, 719], [180, 719],
+            [0, 719], [0, 630], [0, 540], [0, 360], [0, 180], [0, 90]
+        ])
 
 if __name__ == '__main__':
+    refPT[:, 0] = 360 - (refPT[:, 0] - 360)
+    fromPT[:, 0] = 360 - (fromPT[:, 0] - 360)
     ref = np.zeros([720, 720, 3], np.uint8)
-    origin = cv2.imread('image/img-1.png', cv2.IMREAD_COLOR)
+    origin = cv2.imread('image/img-4.png', cv2.IMREAD_COLOR)
 
     mask = np.zeros([720, 720], np.float32)
     cv2.fillConvexPoly(mask, refPT, color=1)
@@ -44,7 +59,7 @@ if __name__ == '__main__':
     #'''
     solver = MLSQ.MovingLSQ_2D(refPT, fromPT)
     dstPts = solver.Run2(srcPts, alpha = 1)
-    np.save('Points/Pt1.npy', {
+    np.save('Points/Pt4.npy', {
                         'srcPts': srcPts, 
                         'dstPts': dstPts, 
                         'srcLabel': refPT, 
