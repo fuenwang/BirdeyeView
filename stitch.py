@@ -7,15 +7,16 @@ import MovingLSQ as MLSQ
 import scipy.ndimage as nd
 
 refPT = np.array([
-            [719, 0], [719, 180],
+            [719, 0], [719, 90], [719, 180],
 
-            [719, 360], [600, 360],
+            [719, 360], [660, 360], [600, 360],
 
             [480, 360], [480, 285],
 
-            [480, 210]
-        ])
+            [480, 210], [501, 185], [600, 105]
 
+        ])
+'''
 fromPT = np.array([
             [0, 0], [360, 90],
 
@@ -25,6 +26,13 @@ fromPT = np.array([
 
             [0, 476]
          ])
+'''
+fromPT = np.array([
+            [0, 0], [182, 1], [360, 1],
+            [714, 1], [669, 180], [623, 360],
+            [532, 718], [268, 607],
+            [4, 496], [2, 434], [5, 248]
+        ])
 
 def SolveH(srcPts, dstPts):
     src = np.ones([8, 3], np.float)
@@ -55,8 +63,14 @@ def SolveH(srcPts, dstPts):
     return H, result
 
 if __name__ == '__main__':
+    tmp = np.load('Points/Pt2.npy').item()
+    refPT = tmp['srcLabel']
+    fromPT = tmp['dstLabel']
+    refPT[:, 0] = 360 - (refPT[:, 0] - 360)
+    fromPT[:, 0] = 360 - (fromPT[:, 0] - 360)
+    #fromPT[:, 1] = 360 - (fromPT[:, 1] - 360)
     ref = np.zeros([720, 720, 3], np.uint8)
-    origin = cv2.imread('/Users/fu-en.wang/Project/BirdViewStitch/ImageStitching/img/birdview2/img-2.png', cv2.IMREAD_COLOR)
+    origin = cv2.imread('/Users/fu-en.wang/Project/BirdViewStitch/ImageStitching/img/birdview2/img-6.png', cv2.IMREAD_COLOR)
 
     mask = np.zeros([720, 720], np.float32)
     cv2.fillConvexPoly(mask, refPT, color=1)
@@ -74,11 +88,10 @@ if __name__ == '__main__':
     srcPts = np.zeros([count, 2])
     srcPts[:, 0] = x_map[mask_ref][:]
     srcPts[:, 1] = y_map[mask_ref][:]
-    
-    #solver = MLSQ.MovingLSQ_2D(refPT, fromPT)
-    #dstPts = solver.Run2(srcPts, alpha = 1)
-    '''
-    np.save('Points/Pt2.npy', {
+    #'''
+    solver = MLSQ.MovingLSQ_2D(refPT, fromPT)
+    dstPts = solver.Run2(srcPts, alpha = 1)
+    np.save('Points/Pt6.npy', {
                         'srcPts': srcPts, 
                         'dstPts': dstPts, 
                         'srcLabel': refPT, 
@@ -86,19 +99,21 @@ if __name__ == '__main__':
                         'srcMask': mask_ref,
                         'dstMask': mask_from
                         })
-    exit()
-    '''
+    #exit()
+    #'''
     img = np.zeros([720, 720, 3], np.uint8)
     img_R = np.zeros([720, 720], np.uint8)
     img_G = np.zeros([720, 720], np.uint8)
     img_B = np.zeros([720, 720], np.uint8) 
     img_lst = sorted(glob.glob('ImageStitching/img/birdview2/*.png'))
     lst = sorted(glob.glob('Points/*.npy'))
-    for idx, one in enumerate(lst):
+    for i, one in enumerate(lst):
+        idx = int(one.split('/')[-1][2]) - 1
         origin = cv2.imread(img_lst[idx])
         data = np.load(one).item()
         dstPts = data['dstPts']
         mask = data['srcMask']
+        mask2 = data['dstMask']
         x = np.zeros([720, 720])
         y = np.zeros([720, 720])
         x[mask] = dstPts[:, 0]
@@ -117,5 +132,7 @@ if __name__ == '__main__':
 
     cv2.namedWindow('GG')
     cv2.imshow('GG', img)
+    #cv2.imshow('GG', mask2.astype(np.float32))
     cv2.waitKey(0)
+    cv2.imwrite('gg.png', img)
 

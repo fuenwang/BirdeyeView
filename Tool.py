@@ -3,10 +3,13 @@ import sys
 import cv2
 import numpy as np
 
+
 class Label:
+
     def __init__(self, img):
         self._img = cv2.imread(img, cv2.IMREAD_COLOR)
         self.Pts = []
+
     def _Click(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
             cv2.circle(self._img, (x, y), 1, (0, 255, 0), 3)
@@ -19,14 +22,15 @@ class Label:
         show = True
         while show:
             cv2.imshow('window1', self._img)
-            key = cv2.waitKey(33)
+            key = cv2.waitKey(1)
             if key == ord('q'):
                 cv2.destroyAllWindows()
                 show = False
 
 
 if __name__ == '__main__':
-    img = 'ImageStitching/img/birdview2/img-2.png'
-
+    #img = 'ImageStitching/img/birdview2/img-2.png'
+    #img = 'gg.png'
+    img = '/Users/fu-en.wang/Desktop/gggg_innovative_tech_backup_birds_eye/Semantic_Result.jpg'
     label = Label(img)
     label.Run()
