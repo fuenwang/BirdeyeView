@@ -88,7 +88,7 @@ if __name__ == '__main__':
     srcPts = np.zeros([count, 2])
     srcPts[:, 0] = x_map[mask_ref][:]
     srcPts[:, 1] = y_map[mask_ref][:]
-    #'''
+    '''
     solver = MLSQ.MovingLSQ_2D(refPT, fromPT)
     dstPts = solver.Run2(srcPts, alpha = 1)
     np.save('Points/Pt6.npy', {
@@ -100,7 +100,7 @@ if __name__ == '__main__':
                         'dstMask': mask_from
                         })
     #exit()
-    #'''
+    '''
     img = np.zeros([720, 720, 3], np.uint8)
     img_R = np.zeros([720, 720], np.uint8)
     img_G = np.zeros([720, 720], np.uint8)
