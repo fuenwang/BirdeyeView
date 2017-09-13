@@ -9,70 +9,21 @@ import MovingLSQ as MLSQ
 import scipy.ndimage as nd
 
 refPT = np.array([
-            [719, 0], [719, 90], [719, 180],
-
-            [719, 360], [660, 360], [600, 360],
-
-            [480, 360], [480, 285],
-
-            [480, 210], [501, 185], [600, 105]
-
+            [0, 0], [90, 0], [180, 0], [270, 0], [360, 0], [450, 0], [540, 0], [630, 0],
+            [719, 0], [659, 53], [599, 105], [539, 158],
+            [479, 210], [420, 210], [360, 210], [300, 210],
+            [240, 210], [210, 184], [180, 158], [120, 105], [60, 53], [30, 27]
         ])
-'''
 fromPT = np.array([
-            [0, 0], [360, 90],
-
-            [719, 180], [696, 410],
-
-            [662, 640], [680, 520],
-
-            [0, 476]
-         ])
-'''
-fromPT = np.array([
-            [0, 0], [182, 1], [360, 1],
-            [714, 1], [669, 180], [623, 360],
-            [532, 718], [268, 607],
-            [4, 496], [2, 434], [5, 248]
+            [0, 0], [90, 0], [180, 0], [270, 0], [360, 0], [450, 0], [540, 0], [630, 0],
+            [719, 0], [719, 180], [719, 360], [719, 540],
+            [719, 719], [540, 719], [360, 719], [180, 719],
+            [0, 719], [0, 630], [0, 540], [0, 360], [0, 180], [0, 90]
         ])
-
-def SolveH(srcPts, dstPts):
-    src = np.ones([8, 3], np.float)
-    dst = np.ones([8, 3], np.float)
-
-    src[:, :2] = fromPT[:, :]
-    dst[:, :2] = refPT[:, :]
-    #src = src.T
-    #dst = dst.T
-
-    #
-    # H x src = dst
-    #
-    
-    A = np.zeros([24, 8], np.float)
-    B = dst.reshape([24])
-
-    for i in range(4):
-        idx = 3 * i
-        A[idx, :3] = src[i, :]
-        A[idx+1, 3:6] = src[i, :]
-        A[idx+2, 6:] = src[i, :2]
-
-    H = np.dot(np.linalg.pinv(A), B)
-    H = np.hstack([H, 1]).reshape([3,3])
-    
-    result = np.dot(H, src.T).T[:, :2].astype(np.int).tolist()
-    return H, result
 
 if __name__ == '__main__':
-    tmp = np.load('Points/Pt2.npy').item()
-    refPT = tmp['srcLabel']
-    fromPT = tmp['dstLabel']
-    refPT[:, 0] = 360 - (refPT[:, 0] - 360)
-    fromPT[:, 0] = 360 - (fromPT[:, 0] - 360)
-    #fromPT[:, 1] = 360 - (fromPT[:, 1] - 360)
     ref = np.zeros([720, 720, 3], np.uint8)
-    origin = cv2.imread('/Users/fu-en.wang/Project/BirdViewStitch/ImageStitching/img/birdview2/img-6.png', cv2.IMREAD_COLOR)
+    origin = cv2.imread('image/img-1.png', cv2.IMREAD_COLOR)
 
     mask = np.zeros([720, 720], np.float32)
     cv2.fillConvexPoly(mask, refPT, color=1)
@@ -90,10 +41,10 @@ if __name__ == '__main__':
     srcPts = np.zeros([count, 2])
     srcPts[:, 0] = x_map[mask_ref][:]
     srcPts[:, 1] = y_map[mask_ref][:]
-    '''
+    #'''
     solver = MLSQ.MovingLSQ_2D(refPT, fromPT)
     dstPts = solver.Run2(srcPts, alpha = 1)
-    np.save('Points/Pt6.npy', {
+    np.save('Points/Pt1.npy', {
                         'srcPts': srcPts, 
                         'dstPts': dstPts, 
                         'srcLabel': refPT, 
@@ -102,12 +53,12 @@ if __name__ == '__main__':
                         'dstMask': mask_from
                         })
     #exit()
-    '''
+    #'''
     img = np.zeros([720, 720, 3], np.uint8)
     img_R = np.zeros([720, 720], np.uint8)
     img_G = np.zeros([720, 720], np.uint8)
     img_B = np.zeros([720, 720], np.uint8) 
-    img_lst = sorted(glob.glob('../ImageStitching/img/birdview2/*.png'))
+    img_lst = sorted(glob.glob('image/*.png'))
     lst = sorted(glob.glob('Points/*.npy'))
     for i, one in enumerate(lst):
         idx = int(one.split('/')[-1][2]) - 1
