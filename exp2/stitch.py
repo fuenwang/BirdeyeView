@@ -61,8 +61,8 @@ if __name__ == '__main__':
     srcPts[:, 1] = y_map[mask_ref][:]
     #'''
     solver = MLSQ.MovingLSQ(refPT, fromPT)
-    dstPts = solver.Run_Affine(srcPts, alpha = 1)
-    #dstPts = solver.Run_Rigid(srcPts, alpha = 1)
+    dstPts = solver.Run_Affine(srcPts)
+    #dstPts = solver.Run_Rigid(srcPts)
     np.save('Points/Pt1.npy', {
                         'srcPts': srcPts, 
                         'dstPts': dstPts, 
