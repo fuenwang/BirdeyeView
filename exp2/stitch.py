@@ -35,10 +35,13 @@ fromPT = np.array([
         ])
 
 if __name__ == '__main__':
-    refPT[:, 0] = 360 - (refPT[:, 0] - 360)
-    fromPT[:, 0] = 360 - (fromPT[:, 0] - 360)
+    #refPT[:, 0] = 360 - (refPT[:, 0] - 360)
+    #fromPT[:, 0] = 360 - (fromPT[:, 0] - 360)
+    tmp = np.load('Points/Pt1.npy').item()
+    refPT = tmp['srcLabel']
+    fromPT = tmp['dstLabel']
     ref = np.zeros([720, 720, 3], np.uint8)
-    origin = cv2.imread('image/img-4.png', cv2.IMREAD_COLOR)
+    origin = cv2.imread('image/img-1.png', cv2.IMREAD_COLOR)
 
     mask = np.zeros([720, 720], np.float32)
     cv2.fillConvexPoly(mask, refPT, color=1)
@@ -56,10 +59,11 @@ if __name__ == '__main__':
     srcPts = np.zeros([count, 2])
     srcPts[:, 0] = x_map[mask_ref][:]
     srcPts[:, 1] = y_map[mask_ref][:]
-    '''
-    solver = MLSQ.MovingLSQ_2D(refPT, fromPT)
+    #'''
+    solver = MLSQ.MovingLSQ(refPT, fromPT)
     dstPts = solver.Run_Affine(srcPts, alpha = 1)
-    np.save('Points/Pt4.npy', {
+    #dstPts = solver.Run_Rigid(srcPts, alpha = 1)
+    np.save('Points/Pt1.npy', {
                         'srcPts': srcPts, 
                         'dstPts': dstPts, 
                         'srcLabel': refPT, 
@@ -68,7 +72,7 @@ if __name__ == '__main__':
                         'dstMask': mask_from
                         })
     #exit()
-    '''
+    #'''
     img = np.zeros([720, 720, 3], np.uint8)
     img_R = np.zeros([720, 720], np.uint8)
     img_G = np.zeros([720, 720], np.uint8)
